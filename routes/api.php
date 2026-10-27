@@ -2,14 +2,16 @@
 
 use App\Http\Controllers\AdminReportController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\AreaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FacilityCategoryController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TechnicianTaskController;
 use App\Http\Controllers\MasterDataController;
-use App\Http\Controllers\NotificationController; 
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {

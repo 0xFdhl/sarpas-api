@@ -13,13 +13,11 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'nisn', 'email', 'password', 'role'];
-
+    protected $fillable = ['name', 'nisn', 'email', 'kelas', 'password', 'role'];
     protected $hidden = [
         'password',
         'remember_token',
     ];
-
     protected function casts(): array
     {
         return [

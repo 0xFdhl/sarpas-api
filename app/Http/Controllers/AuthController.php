@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -12,6 +13,26 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    public function register(RegisterRequest $request): JsonResponse
+    {
+        $user = User::create([
+            'name'     => $request->name,
+            'nisn'     => $request->nisn,
+            'kelas'    => $request->kelas,
+            'password' => $request->password,
+            'role'     => 'siswa',
+        ]);
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message'    => 'Registrasi berhasil.',
+            'token'      => $token,
+            'token_type' => 'Bearer',
+            'user'       => new UserResource($user),
+        ], 201);
+    }
+
     public function login(LoginRequest $request): JsonResponse
     {
         $siswa = $request->filled('nisn');
@@ -21,7 +42,7 @@ class AuthController extends Controller
             : User::where('email', $request->email)->whereIn('role', ['admin', 'teknisi'])->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
-            return response()->json([   
+            return response()->json([
                 'message' => $siswa ? 'NISN atau password salah.' : 'Email atau password salah.',
             ], 401);
         }
