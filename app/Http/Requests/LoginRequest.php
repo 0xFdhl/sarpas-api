@@ -11,11 +11,12 @@ class LoginRequest extends FormRequest
         return true;
     }
 
-    public function rules(): array
-    {
-        return [
-            'nisn'     => ['required', 'string', 'digits:10'],
-            'password' => ['required', 'string'],
-        ];
-    }
+   public function rules(): array
+{
+    return [
+        'nisn'     => ['required_without:email', 'nullable', 'string', 'digits:10'],
+        'email'    => ['required_without:nisn', 'nullable', 'email'],
+        'password' => ['required', 'string'],
+    ];
+}
 }

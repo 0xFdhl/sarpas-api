@@ -66,4 +66,33 @@ class ReportController extends Controller
 
         return new ReportResource($report);
     }
+    public function quota(Request $request)
+    {
+        $limit = 2;
+        $terpakai = Report::where('user_id', $request->user()->id)
+            ->whereDate('created_at', today())
+            ->count();
+
+        return response()->json([
+            'limit'    => $limit,
+            'terpakai' => $terpakai,
+            'sisa'     => max(0, $limit - $terpakai),
+        ]);
+    }
+
+    public function addMessage(Request $request, Report $report)
+    {
+        Gate::authorize('view', $report);
+
+        $data = $request->validate([
+            'message' => ['required', 'string', 'max:1000'],
+        ]);
+
+        $comment = $report->comments()->create([
+            'user_id' => $request->user()->id,
+            'pesan' => $data['message'],
+        ]);
+
+        return response()->json($comment->load('user'), 201);
+    }
 }

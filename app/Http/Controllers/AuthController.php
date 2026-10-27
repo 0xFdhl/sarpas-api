@@ -14,13 +14,15 @@ class AuthController extends Controller
 {
     public function login(LoginRequest $request): JsonResponse
     {
-        $user = User::where('nisn', $request->nisn)
-            ->where('role', 'siswa')
-            ->first();
+        $siswa = $request->filled('nisn');
+
+        $user = $siswa
+            ? User::where('nisn', $request->nisn)->where('role', 'siswa')->first()
+            : User::where('email', $request->email)->whereIn('role', ['admin', 'teknisi'])->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'message' => 'NISN atau password salah.',
+            return response()->json([   
+                'message' => $siswa ? 'NISN atau password salah.' : 'Email atau password salah.',
             ], 401);
         }
 
